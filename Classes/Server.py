@@ -89,8 +89,6 @@ class Server(object):
                     arr=server_data.split("*")
                     print(arr)
                     if arr!=None and arr[0]=="signup" and len(arr)==4:
-                        # print("Sign up user")
-                        # print(arr)
                         server_data=self.UserDb.insert_user(arr[1],arr[2],arr[3])
                         print("Server data: ",server_data)
                         if server_data==True:
@@ -120,12 +118,12 @@ class Server(object):
                             self.send_msg("Search for category image failed", client_socket)
                         else:
                             self.send_msg(image_path,client_socket)
-                    elif arr!= None and arr[0]=="get_category_image_data" and len(arr)==2:
-                        image_path = self.CategoryDb.get_image_path(arr[1])
-                        with open(image_path, 'rb') as f:
-                            data = f.read()
-                            f.close()
-                        self.send_msg(data, client_socket)
+                    # elif arr!= None and arr[0]=="get_category_image_data" and len(arr)==2:
+                    #     image_path = self.CategoryDb.get_image_path(arr[1])
+                    #     with open(image_path, 'rb') as f:
+                    #         data = f.read()
+                    #         f.close()
+                        #self.send_msg(data, client_socket)
                     # _____________________________________________
                     elif arr!=None and arr[0]=="get_num_of_recipes" and len(arr)==2:
                         server_data=self.CategoryDb.get_num_of_recipes(arr[1])
@@ -165,11 +163,14 @@ class Server(object):
                     elif arr != None and arr[0] == "get_recipe_name_and_image_data" and len(arr) == 2:
                         server_data = self.RecipesDb.get_name_and_image_by_ctg_id(arr[1])
                         image_paths = [s.split('^')[1] for s in server_data]
-                        data = b''
-                        for path in image_paths:
+                        count=0
+                        while len(image_paths) > 0:
+                            path = image_paths[0]
+                            data = b''
                             with open(path, 'rb') as f:
-                                data += f.read() + b"|"
-                        self.send_msg(data, client_socket)
+                                data += f.read()
+                                self.send_msg(data, client_socket)
+                        count+=1
                     # _____________________________________________
                     elif arr!=None and arr[0]=="get_ingredients" and len(arr)==2:
                         server_data=self.IngredientsDb.get_ingredients_by_recipe_name(arr[1])
@@ -386,7 +387,9 @@ class Server(object):
 
 
 if __name__ == '__main__':
-   ip = '10.20.4.30'
-   port = 1803
-   S = Server(ip, port)
+   # ip = '0.0.0.0'
+   # port = 5010
+   ip = input("Enter IP: ")
+   port = input("Enter port: ")
+   S = Server(ip, int(port))
    S.start()

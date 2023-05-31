@@ -16,7 +16,7 @@ class MainScreen(tkinter.Toplevel):
         # print(self.parent.parent.client_socket)
         self.geometry("600x770+20+20")
         self.title('Main Screen')
-        self.iconbitmap('photos/other/icon_recipe.ico')
+        self.iconbitmap('photos/other_photos/icon_recipe.ico')
         self.resizable(False,False)
         self.configure(bg="#B5D5C5")
 
@@ -62,7 +62,7 @@ class MainScreen(tkinter.Toplevel):
 
         self.entry_search.bind("<KeyRelease>", lambda event: search())
 
-        self.img_search = Image.open('photos/other/loupe2.png')
+        self.img_search = Image.open('photos/other_photos/loupe.png')
         self.resized = self.img_search.resize((20, 18), Image.LANCZOS)
         self.image_loupe = ImageTk.PhotoImage(self.resized)
         self.btn_loupe = Button(self.head_frame, image=self.image_loupe, bd=0, bg="#658864", fg="white",

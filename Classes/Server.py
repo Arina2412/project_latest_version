@@ -160,17 +160,17 @@ class Server(object):
                             arr_to_send = "#".join(server_data)
                             print(arr_to_send)
                             self.send_msg(arr_to_send,client_socket)
-                    elif arr != None and arr[0] == "get_recipe_name_and_image_data" and len(arr) == 2:
-                        server_data = self.RecipesDb.get_name_and_image_by_ctg_id(arr[1])
-                        image_paths = [s.split('^')[1] for s in server_data]
-                        count=0
-                        while len(image_paths) > 0:
-                            path = image_paths[0]
-                            data = b''
-                            with open(path, 'rb') as f:
-                                data += f.read()
-                                self.send_msg(data, client_socket)
-                        count+=1
+                    # elif arr != None and arr[0] == "get_recipe_name_and_image_data" and len(arr) == 2:
+                    #     server_data = self.RecipesDb.get_name_and_image_by_ctg_id(arr[1])
+                    #     image_paths = [s.split('^')[1] for s in server_data]
+                    #     count=0
+                    #     while len(image_paths) > 0:
+                    #         path = image_paths[0]
+                    #         data = b''
+                    #         with open(path, 'rb') as f:
+                    #             data += f.read()
+                    #             self.send_msg(data, client_socket)
+                    #     count+=1
                     # _____________________________________________
                     elif arr!=None and arr[0]=="get_ingredients" and len(arr)==2:
                         server_data=self.IngredientsDb.get_ingredients_by_recipe_name(arr[1])

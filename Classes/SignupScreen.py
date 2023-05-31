@@ -12,7 +12,7 @@ class SignupScreen(tkinter.Toplevel):
         self.parent=parent
         self.geometry("600x770+20+20")
         self.title('SignUp Screen')
-        self.iconbitmap('photos/other/icon_recipe.ico')
+        self.iconbitmap('photos/other_photos/icon_recipe.ico')
         self.resizable(False, False)
         self.UserDb=UsersDb()
         self.create_gui()
@@ -22,7 +22,7 @@ class SignupScreen(tkinter.Toplevel):
     def create_gui(self):
         self.canvas = Canvas(self, width=600, height=770, bd=0, highlightthickness=0)
         self.canvas.pack()
-        self.img = Image.open('photos/other/background.png')
+        self.img = Image.open('photos/other_photos/background.png')
         self.resized = self.img.resize((600, 770), Image.LANCZOS)
         self.image = ImageTk.PhotoImage(self.resized)
         self.photo = self.canvas.create_image(0, 0, anchor=NW, image=self.image)

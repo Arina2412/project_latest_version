@@ -13,7 +13,7 @@ class RecipesScreen(tkinter.Toplevel):
         super().__init__(parent)
         self.parent=parent
         self.geometry("600x770+20+20")
-        self.iconbitmap('photos/other/icon_recipe.ico')
+        self.iconbitmap('photos/other_photos/icon_recipe.ico')
         self.resizable(False,False)
         self.configure(bg="#B5D5C5")
         #________________________________________________________________

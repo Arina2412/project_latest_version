@@ -20,7 +20,7 @@ class StartScreen(tkinter.Tk):
         self.FORMAT = 'utf-8'
         self.geometry("600x770+20+20")
         self.title('Start Screen')
-        self.iconbitmap('photos/other/icon_recipe.ico')
+        self.iconbitmap('photos/other_photos/icon_recipe.ico')
         #self.configure(bg="#BCEAD5")
         self.resizable(False,False)
 
@@ -32,7 +32,7 @@ class StartScreen(tkinter.Tk):
     def create_gui(self):
         self.canvas=Canvas(self,width=600,height=770,bd=0,highlightthickness=0)
         self.canvas.pack()
-        self.img = Image.open('photos/other/background.png')
+        self.img = Image.open('photos/other_photos/background.png')
         self.resized = self.img.resize((600, 770), Image.LANCZOS)
         self.image = ImageTk.PhotoImage(self.resized)
         self.photo = self.canvas.create_image(0,0,anchor=NW,image=self.image)
@@ -105,8 +105,14 @@ class StartScreen(tkinter.Tk):
             #     print("Data is bytes")
             return data
         except Exception as e:
-            print("Error with message receiving:", str(e))
+            print("Error with message receiving: ", str(e))
+            error_message = "[WinError 10054] An existing connection was forcibly closed by the remote host"
+            if str(e) == error_message:
+                self.pops_error()
             return None
+
+    def pops_error(self):
+        messagebox.showerror("Connection Error", "The server has disconnected.\nPlease reconnect later.")
 
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
@@ -121,7 +127,7 @@ class LoginScreen(tkinter.Toplevel):
 
         self.geometry("600x770+20+20")
         self.title('LogIn Screen')
-        self.iconbitmap('photos/other/icon_recipe.ico')
+        self.iconbitmap('photos/other_photos/icon_recipe.ico')
         self.resizable(False, False)
         self.UserDb = UsersDb()
 
@@ -132,7 +138,7 @@ class LoginScreen(tkinter.Toplevel):
     def create_gui(self):
         self.canvas = Canvas(self, width=600, height=770, bd=0, highlightthickness=0)
         self.canvas.pack()
-        self.img = Image.open('photos/other/background.png')
+        self.img = Image.open('photos/other_photos/background.png')
         self.resized = self.img.resize((600, 770), Image.LANCZOS)
         self.image = ImageTk.PhotoImage(self.resized)
         self.photo = self.canvas.create_image(0, 0, anchor=NW, image=self.image)
@@ -196,8 +202,8 @@ class LoginScreen(tkinter.Toplevel):
             self.destroy()
 
 if __name__ == "__main__":
-    ip = '10.20.4.30'
-    port = 1803
-    window = StartScreen(ip,port)
+    ip = input("Enter IP: ")
+    port = input("Enter port: ")
+    window = StartScreen(ip,int(port))
     window.mainloop()
 

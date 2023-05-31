@@ -7,7 +7,7 @@ class HistoryScreen(tkinter.Toplevel):
         self.parent = parent
         self.geometry("600x770+20+20")
         self.title('History Screen')
-        self.iconbitmap('photos/other/icon_recipe.ico')
+        self.iconbitmap('photos/other_photos/icon_recipe.ico')
         self.resizable(False, False)
         self.configure(bg="#B5D5C5")
         self.username=username
@@ -37,7 +37,7 @@ class HistoryScreen(tkinter.Toplevel):
         self.title_lb = Label(self.head_frame, text="History", bg="#658864", fg="white", font=('Calibri', 20))
         self.title_lb.place(x=250, y=12)
         # _____________________________________________________________________________________________________
-        self.img_search = Image.open('photos/other/trash can.png')
+        self.img_search = Image.open('photos/other_photos/trash_can.png')
         self.resized = self.img_search.resize((30, 30), Image.LANCZOS)
         self.image_trach_can = ImageTk.PhotoImage(self.resized)
         self.clear_btn = Button(self.head_frame, image=self.image_trach_can, bd=0, bg="#658864", fg="white",

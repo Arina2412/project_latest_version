@@ -26,6 +26,7 @@ class RecipesDb(object):
         conn.commit()
         conn.close()
 
+    #פונקציה שמכניסה את פרטי המתכון לטבלה
     def insert_recipe(self, recipe_name,recipe_image_path,category_id, nutritions, cooking_time, description):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -41,7 +42,7 @@ class RecipesDb(object):
             print("Failed to insert recipe:", e)
             return False
 
-
+    #פונקציה שמחזירה את פרטי המתכון
     def get_one_recipe(self,recipe_name):
         arr=[]
         try:
@@ -61,29 +62,7 @@ class RecipesDb(object):
         except:
             return "Trouble in DataBase"
 
-
-    def get_one_recipe2(self):
-        info = ""
-        try:
-            conn = sqlite3.connect('project_recipes.db')
-            str = ("""
-                    SELECT recipe_id, recipe_name, CategoryDb.category_name, nutritions, cooking_time,description 
-                    FROM CategoryDb
-                    INNER JOIN RecipesDb ON RecipesDb.category_id = CategoryDb.category_id
-                    """)
-            cursor = conn.execute(str)
-            rows=cursor.fetchall()
-            for row in rows:
-                info= row[1] + row[2] +row[3]+ row[4] +row[5]
-                print(info)
-            conn.close()
-            if len(rows)==0:
-                info = "Recipe is not found in the table"
-            return info
-        except:
-            return "Trouble in DataBase"
-
-
+    #
     def get_name_and_image_by_ctg_id(self,category_id):
         info= ""
         arr = []
@@ -132,8 +111,8 @@ class RecipesDb(object):
         info= ""
         try:
             conn = sqlite3.connect('project_recipes.db')
-            str_get_num_of_recipes="Select cooking_time from " +self.__tablename+" where "+ self.__recipe_name + "=" + "'" + recipe_name + "'"
-            cursor = conn.execute(str_get_num_of_recipes)
+            str_get_cooking_time="Select cooking_time from " +self.__tablename+" where "+ self.__recipe_name + "=" + "'" + recipe_name + "'"
+            cursor = conn.execute(str_get_cooking_time)
             rows = cursor.fetchall()
             #print(len(rows))
             for row in rows:
@@ -413,7 +392,7 @@ class UsersDb(object):
             conn.execute(str_update_email)
             conn.commit()
             conn.close()
-            # print("Email updated successfully")
+            print("Email updated successfully")
             return True
         except:
             print("Failed to change email")
@@ -474,28 +453,28 @@ class IngredientsDb(object):
             print("Record created successfully")
             return True
         except:
-            print("Failed to insert category")
+            print("Failed to insert ingredient")
             return False
 
-    # def get_one_ingredient(self, ingredient_id):
-    #     info = ""
-    #     try:
-    #         conn = sqlite3.connect('project_recipes.db')
-    #         str_get_one_ingredient = "Select * from " + self.__tablename + " where " + self.__ingredient_id + "=" + "'" + str(
-    #             ingredient_id) + "'"
-    #         cursor = conn.execute(str_get_one_ingredient)
-    #         rows = cursor.fetchall()
-    #         print(len(rows))
-    #         for row in rows:
-    #             info = "Ingredient id: " + str(row[0]) + "  Ingredient Name: " + row[1] + "  Ingredient Amount: " + str(
-    #                 row[2]) + "Recipe name: " + row[3]
-    #             print(row[0], row[1], row[2],row[3])
-    #         conn.close()
-    #         if len(rows) == 0:
-    #             info = "Not found"
-    #         return info
-    #     except:
-    #         return "Trouble on db"
+    def get_one_ingredient(self, ingredient_id):
+        info = ""
+        try:
+            conn = sqlite3.connect('project_recipes.db')
+            str_get_one_ingredient = "Select * from " + self.__tablename + " where " + self.__ingredient_id + "=" + "'" + str(
+                ingredient_id) + "'"
+            cursor = conn.execute(str_get_one_ingredient)
+            rows = cursor.fetchall()
+            print(len(rows))
+            for row in rows:
+                info = "Ingredient id: " + str(row[0]) + "  Ingredient Name: " + row[1] + "  Ingredient Amount: " + str(
+                    row[2]) + "Recipe name: " + row[3]
+                print(row[0], row[1], row[2],row[3])
+            conn.close()
+            if len(rows) == 0:
+                info = "Not found"
+            return info
+        except:
+            return "Trouble on db"
 
     def get_ingredients_by_recipe_name(self,recipe_name):
         info = ""
@@ -533,21 +512,21 @@ class IngredientsDb(object):
         print("Success")
         conn.close()
 
-    # def get_one_ingredient2(self):
-    #     conn = sqlite3.connect('project_recipes.db')
-    #     str = ("""
-    #             SELECT ingredient_id, ingredient_name, ingredient_amount, RecipesDb.recipe_name
-    #             FROM RecipesDb
-    #             INNER JOIN IngredientsDb ON IngredientsDb.recipe_id = RecipesDb.recipe_id
-    #             """)
-    #     cursor = conn.execute(str)
-    #     for row in cursor:
-    #         print("ingredient_id =", row[0])
-    #         print("ingredient_name =", row[1])
-    #         print("ingredient_amount =", row[2])
-    #         print("recipe_name =", row[3])
-    #     conn.commit()
-    #     conn.close()
+    def get_one_ingredient_with_recipe_name(self):
+        conn = sqlite3.connect('project_recipes.db')
+        str = ("""
+                SELECT ingredient_id, ingredient_name, ingredient_amount, RecipesDb.recipe_name
+                FROM RecipesDb
+                INNER JOIN IngredientsDb ON IngredientsDb.recipe_id = RecipesDb.recipe_id
+                """)
+        cursor = conn.execute(str)
+        for row in cursor:
+            print("ingredient_id =", row[0])
+            print("ingredient_name =", row[1])
+            print("ingredient_amount =", row[2])
+            print("recipe_name =", row[3])
+        conn.commit()
+        conn.close()
 
     def check_ingredient(self,ingredient_id):
         conn1 = sqlite3.connect('project_recipes.db')
@@ -573,24 +552,6 @@ class IngredientsDb(object):
         conn.close()
         print("Ingredient deleted successfully")
 
-
-# def JoinRecipesTblToCategoryTbl():
-#     conn = sqlite3.connect('project_recipes.db')
-#     str= ("""
-#             SELECT recipe_id, recipe_name, CategoryDb.category_name, nutritions, cooking_time,description
-#             FROM CategoryDb
-#             INNER JOIN RecipesDb ON RecipesDb.category_id = CategoryDb.category_id
-#             """)
-#     cursor = conn.execute(str)
-#     for row in cursor:
-#         print("recipe_id =", row[0])
-#         print("recipe_name =", row[1])
-#         print("category_name =", row[2])
-#         print("nutritions =", row[3])
-#         print("cooking_time =", row[4])
-#         print("description =", row[5])
-#     conn.commit()
-#     conn.close()
 
 class HistoryRecipesDb(object):
     def __init__(self, tablename="HistoryRecipesDb",recipe_id="recipe_id", recipe_name="recipe_name",recipe_image_path="recipe_image_path", nutritions="nutritions", cooking_time="cooking_time", description="description",username="username"):
@@ -981,7 +942,7 @@ class ShoppingListDb(object):
                 print("Already exists")
                 return False
         except:
-            print("Failed to insert category")
+            print("Failed to insert ingredient")
             return False
 
     def get_ingredients_by_username(self,username):
@@ -1051,30 +1012,30 @@ def insert_rcp(arr):
     for name, image, id_c, nutritions, time, instruction in arr:
         R.insert_recipe(name, image, id_c, nutritions, time, instruction)
 
-arr_recipes=[("Aussie Sausage Rolls",'photos/appetizers_recipes/aussie sausage rolls.jpg',1,"116 calories","40 minutes","Preheat oven to 350°.Combine first 6 ingredients and 3/4 teaspoon paprika. Add sausage; mix lightly but thoroughly. On a lightly floured surface, roll each pastry sheet into an 11x10-1/2-in. Rectangle. Cut lengthwise into 3 strips. Spread 1/2 cup sausage mixture lengthwise down the center of each strip. Fold over sides, pinching edges to seal. Cut each log into 6 pieces. Place on a rack in a 15x10x1-in. pan, seam side down. Sprinkle with remaining 1/4 teaspoon paprika. Bake until golden brown and sausage is no longer pink, 20-25 minutes."),
-            ("Chicken & Bacon Roll Ups",'photos/appetizers_recipes/chicken&bacon roll ups.jpg',1,"43 calories","20 minutes","Mix chicken, cream cheese, 1/2 cup salsa and bacon; spread over tortillas. Roll up tightly; wrap. Refrigerate at least 1 hour. Just before serving, unwrap and cut tortillas into 1-in. slices. Serve with remaining salsa."),
-            ("Party Shrimps",'photos/appetizers_recipes/party shrimps.jpg',1,"14 calories","25 minutes","In a bowl or shallow dish, combine the first 7 ingredients. Add shrimp; toss to coat. Refrigerate 2 hours. Drain shrimp, discarding marinade. Place shrimp on an ungreased baking sheet. Broil 4 in. from heat until shrimp turn pink, 3-4 minutes on each side."),
-            ("South-of-Border Bruschetta",'photos/appetizers_recipes/south-of-the-border bruschetta.jpg',1,"62 calories","25 minutes","In a small bowl, mix avocados, cilantro, chili peppers and salt. Finely grate zest from limes. Cut limes crosswise in half; squeeze juice from limes. Stir lime zest and juice into avocado mixture. Refrigerate 30 minutes. Preheat broiler. Place bread slices on an ungreased baking sheet. Broil 3-4 in. from heat 1-2 minutes on each side or until golden brown. Top with avocado mixture. If desired, sprinkle with cheese."),
-            ("Asian Chicken Noodle Soup",'photos/soups_recipes/Asian Chicken Noodle Soup.jpg',2,"227 calories","40 minutes","In a Dutch oven, cook chicken in oil over medium heat until no longer pink. Remove and keep warm. In the same pan, saute the carrots, celery and onion until tender. Stir in the broth, teriyaki sauce, garlic sauce and chicken. Bring to a boil. Reduce heat; simmer, uncovered, for 20 minutes. Add the wonton strips, mushrooms, celery leaves, basil and cilantro. Cook and stir for 4-5 minutes or until wonton strips and mushrooms are tender. Sprinkle with green onions."),
-            ("Tortellini Spinach Soup",'photos/soups_recipes/Easy Tortellini Spinach Soup.jpg',2,"177 calories","20 minutes","Place the first 5 ingredients in a 6-qt. stockpot; bring to a boil. Reduce heat; simmer, covered, 10 minutes. Return to a boil. Add tortellini; cook, uncovered, until meatballs are heated through and tortellini are tender, 3-5 minutes, stirring occasionally. Stir in spinach until wilted. Serve immediately. If desired, top with cheese."),
-            ("Cheesy Potato Soup",'photos/soups_recipes/Homemade Cheesy Potato Soup.jpg',2,"296 calories","35 minutes","Melt butter in a Dutch oven over medium-high heat. Add onion; cook and stir until tender, 5 minutes. Add potatoes and water; bring to a boil. Reduce heat; cover and simmer until potatoes are tender, 15 minutes. Stir in the milk, soup, garlic salt and pepper; heat until warmed through. Add cheese; stir until cheese is melted. Sprinkle with parsley."),
-            ("Onion Cheese Soup",'photos/soups_recipes/Onion Cheese Soup.jpg',2,"308 calories","25 minutes","In a large saucepan, saute the onion in butter. Stir in the flour, salt and pepper until blended. Gradually add milk. Bring to a boil; cook and stir for 2 minutes or until thickened. Stir in cheese until melted. Serve with croutons and; if desired, top with Parmesan cheese and minced chives."),
-            ("Breaded Pork Chops",'photos/main_dishes_recipes/Breaded Pork Chops.jpg',3,"405 calories","20 minutes","In a shallow bowl, combine egg and milk. Place cracker crumbs in another shallow bowl. Dip each pork chop in egg mixture, then coat with cracker crumbs, patting to make a thick coating.In a large skillet, cook chops in oil for 4-5 minutes on each side or until a thermometer reads 145°. Let meat stand for 5 minutes before serving."),
-            ("Chicken with Butter Sauce",'photos/main_dishes_recipes/Chicken with Butter Sauce.jpg',3,"411 calories","25 minutes","In a large skillet over medium heat, cook chicken in 1 tablespoon butter until a thermometer reads 165°, 4-5 minutes on each side. Remove and keep warm. Add wine to pan; cook over medium-low heat, stirring to loosen browned bits from pan. Add cream and bring to a boil. Reduce heat; cook and stir until slightly thickened. Stir in rosemary and remaining 3 tablespoons butter until blended. Serve sauce with chicken."),
-            ("Parmesan Chicken Breast",'photos/main_dishes_recipes/Parmesan Chicken Breast.jpg',3,"391 calories","30 minutes","Combine cheese, bread crumbs and butter. Coat chicken breasts with mustard, then dip into crumb mixture. Place breaded chicken in a 13x9-in. baking pan. Bake at 425° until a thermometer inserted in chicken reads 165°, about 15 minutes."),
-            ("Ravioli Lasagna",'photos/main_dishes_recipes/Ravioli Lasagna.jpg',3,"438 calories","40 minutes","In a large skillet, cook and crumble beef over medium heat until no longer pink, 5-7 minutes; drain. In a greased 2-1/2-qt. baking dish, layer a third of the spaghetti sauce, half of the ravioli and beef, and 1/2 cup cheese; repeat layers. Top with remaining sauce and cheese. Cover and bake at 400° until heated through, 40-45 minutes. If desired, top with basil to serve."),
-            ("Sausage Hash",'photos/main_dishes_recipes/Sausage Hash.jpg',3,"245 calories","30 minutes","In a large cast-iron or other heavy skillet, cook the sausage over medium heat until no longer pink; drain. Add the onion, carrots and green pepper; cook until tender. Stir in the potatoes, salt and pepper. Reduce heat; cook and stir until lightly browned and heated through, about 20 minutes."),
-            ("Bacon Chopped Salad",'photos/salads_recipes/Bacon Chicken Chopped Salad.jpg',4,"348 calories","20 minutes","Heat chicken according to package directions. Cool slightly; coarsely chop chicken. For dressing, place cheese, vinegar, water and pepper in a small food processor; cover and process until smooth. While processing, gradually add oil in a steady stream. In a large bowl, combine romaine, chicken, tomatoes and bacon. Serve with dressing."),
-            ("Caesar Salad",'photos/salads_recipes/Caesar Salad.jpg',4,"265 calories","10 minutes","Place lettuce in a large salad bowl. Combine the next 6 ingredients in a blender; process until smooth. Pour over lettuce and toss to coat. Squeeze lemon juice over lettuce. Sprinkle with pepper, cheese and croutons."),
-            ("Caprese Salad",'photos/salads_recipes/Caprese Salad.jpg',4,"256 calories","15 minutes","Arrange the tomatoes, cheese and basil on a serving platter. Whisk the vinaigrette ingredients; drizzle over salad. If desired, sprinkle with additional salt and pepper."),
-            ("Garden Tomato Salad",'photos/salads_recipes/Garden Tomato Salad.jpg',4,"92 calories","15 minutes","In a large bowl, combine tomatoes, onion and cucumber. In a small bowl, whisk dressing ingredients until blended. Drizzle over salad; gently toss to coat. Serve immediately."),
-            ("Greek Salad",'photos/salads_recipes/Greek Salad.jpg',4,"148 calories","20 minutes","Place tomatoes, cucumbers and onion in a large bowl. In a small bowl, whisk oil, vinegar, salt and pepper and, if desired, oregano until blended. Drizzle over salad; toss to coat. Top with olives and cheese."),
-            ("Berry Dream Cake",'photos/desserts_recipes/Berry Dream Cake.jpg',5,"306 calories","45 minutes","Prepare and bake cake mix batter according to package directions, using a greased 13x9-in. baking pan. In a small bowl, add boiling water to gelatin; stir 2 minutes to completely dissolve. Cool cake on a wire rack 3-5 minutes. Using a wooden skewer, pierce holes in top of cake to within 1 in. of edge, twisting skewer gently to make slightly larger holes. Gradually pour gelatin over cake, being careful to fill each hole. Cool 15 minutes. Refrigerate, covered, 30 minutes. In a large bowl, beat cream cheese until fluffy. Fold in whipped topping. Carefully spread over cake. Top with strawberries. Cover and refrigerate for at least 2 hours"),
-            ("Cherry Tarts",'photos/desserts_recipes/Cherry Cream Cheese Tarts.jpg',5,"362 calories","10 minutes","In a small bowl, beat the cream cheese, sugar and extract until smooth. Spoon into shells. Top with pie filling. Refrigerate until serving."),
-            ("Chocolate Molten Cakes",'photos/desserts_recipes/Spiced Chocolate Molten Cakes.jpg',5,"560 calories","30 minutes","Preheat oven to 425°. In a microwave, melt butter and chocolate; stir until smooth. Stir in wine and vanilla. In a small bowl, beat the egg, egg yolk and confectioners sugar until thick and lemon-colored. Beat in the flour, ginger and cinnamon until well blended. Gradually beat in butter mixture. Transfer to 2 greased 6-oz. ramekins or custard cups. Place ramekins on a baking sheet. Bake until a thermometer inserted in the center reads 160° and sides of cakes are set, 10-12 minutes. Remove from the oven and let stand for 1 minute. Run a knife around edges of ramekins; invert onto dessert plates. Dust with additional confectioners sugar. Serve immediately."),
-            ("Citrus Cider Punch",'photos/drinks_recipes/Citrus Cider Punch.jpg',6,"138 calories","5 minutes","In a large punch bowl, combine cider and lemonade. Add lemon slices and apple rings. If desired, serve with additional lemon slices and apple rings."),
-            ("Cranberry Fizz",'photos/drinks_recipes/Cranberry Fizz.jpg',6,"154 calories","5 minutes","In a pitcher, combine cranberry, orange and grapefruit juices and sugar. Refrigerate, covered, until chilled. Just before serving, stir in ginger ale. To serve, pour mixture over ice. Garnish with orange slices and cranberries if desired."),
-            ("Pineapple Iced Tea",'photos/drinks_recipes/Pineapple Iced Tea.jpg',6,"51 calories","15 minutes","In a large saucepan, bring water to a boil; remove from heat. Add tea bags; steep, covered, 3-5 minutes according to taste. Discard tea bags. Stir in sugar until dissolved. Transfer to a pitcher; cool slightly. Stir in fruit juices. Refrigerate, covered, overnight. Serve over ice. Garnish as desired.")]
+arr_recipes=[("Aussie Sausage Rolls",'photos/recipes/Aussie Sausage Rolls.jpg',1,"116 calories","40 minutes","Preheat oven to 350°.Combine first 6 ingredients and 3/4 teaspoon paprika. Add sausage; mix lightly but thoroughly. On a lightly floured surface, roll each pastry sheet into an 11x10-1/2-in. Rectangle. Cut lengthwise into 3 strips. Spread 1/2 cup sausage mixture lengthwise down the center of each strip. Fold over sides, pinching edges to seal. Cut each log into 6 pieces. Place on a rack in a 15x10x1-in. pan, seam side down. Sprinkle with remaining 1/4 teaspoon paprika. Bake until golden brown and sausage is no longer pink, 20-25 minutes."),
+            ("Chicken & Bacon Roll Ups",'photos/recipes/Chicken & Bacon Roll Ups.jpg',1,"43 calories","20 minutes","Mix chicken, cream cheese, 1/2 cup salsa and bacon; spread over tortillas. Roll up tightly; wrap. Refrigerate at least 1 hour. Just before serving, unwrap and cut tortillas into 1-in. slices. Serve with remaining salsa."),
+            ("Party Shrimps",'photos/recipes/Party Shrimps.jpg',1,"14 calories","25 minutes","In a bowl or shallow dish, combine the first 7 ingredients. Add shrimp; toss to coat. Refrigerate 2 hours. Drain shrimp, discarding marinade. Place shrimp on an ungreased baking sheet. Broil 4 in. from heat until shrimp turn pink, 3-4 minutes on each side."),
+            ("South-of-Border Bruschetta",'photos/recipes/South-of-Border Bruschetta.jpg',1,"62 calories","25 minutes","In a small bowl, mix avocados, cilantro, chili peppers and salt. Finely grate zest from limes. Cut limes crosswise in half; squeeze juice from limes. Stir lime zest and juice into avocado mixture. Refrigerate 30 minutes. Preheat broiler. Place bread slices on an ungreased baking sheet. Broil 3-4 in. from heat 1-2 minutes on each side or until golden brown. Top with avocado mixture. If desired, sprinkle with cheese."),
+            ("Asian Chicken Noodle Soup",'photos/recipes/Asian Chicken Noodle Soup.jpg',2,"227 calories","40 minutes","In a Dutch oven, cook chicken in oil over medium heat until no longer pink. Remove and keep warm. In the same pan, saute the carrots, celery and onion until tender. Stir in the broth, teriyaki sauce, garlic sauce and chicken. Bring to a boil. Reduce heat; simmer, uncovered, for 20 minutes. Add the wonton strips, mushrooms, celery leaves, basil and cilantro. Cook and stir for 4-5 minutes or until wonton strips and mushrooms are tender. Sprinkle with green onions."),
+            ("Tortellini Spinach Soup",'photos/recipes/Tortellini Spinach Soup.jpg',2,"177 calories","20 minutes","Place the first 5 ingredients in a 6-qt. stockpot; bring to a boil. Reduce heat; simmer, covered, 10 minutes. Return to a boil. Add tortellini; cook, uncovered, until meatballs are heated through and tortellini are tender, 3-5 minutes, stirring occasionally. Stir in spinach until wilted. Serve immediately. If desired, top with cheese."),
+            ("Cheesy Potato Soup",'photos/recipes/Cheesy Potato Soup.jpg',2,"296 calories","35 minutes","Melt butter in a Dutch oven over medium-high heat. Add onion; cook and stir until tender, 5 minutes. Add potatoes and water; bring to a boil. Reduce heat; cover and simmer until potatoes are tender, 15 minutes. Stir in the milk, soup, garlic salt and pepper; heat until warmed through. Add cheese; stir until cheese is melted. Sprinkle with parsley."),
+            ("Onion Cheese Soup",'photos/recipes/Onion Cheese Soup.jpg',2,"308 calories","25 minutes","In a large saucepan, saute the onion in butter. Stir in the flour, salt and pepper until blended. Gradually add milk. Bring to a boil; cook and stir for 2 minutes or until thickened. Stir in cheese until melted. Serve with croutons and; if desired, top with Parmesan cheese and minced chives."),
+            ("Breaded Pork Chops",'photos/recipes/Breaded Pork Chops.jpg',3,"405 calories","20 minutes","In a shallow bowl, combine egg and milk. Place cracker crumbs in another shallow bowl. Dip each pork chop in egg mixture, then coat with cracker crumbs, patting to make a thick coating.In a large skillet, cook chops in oil for 4-5 minutes on each side or until a thermometer reads 145°. Let meat stand for 5 minutes before serving."),
+            ("Chicken with Butter Sauce",'photos/recipes/Chicken with Butter Sauce.jpg',3,"411 calories","25 minutes","In a large skillet over medium heat, cook chicken in 1 tablespoon butter until a thermometer reads 165°, 4-5 minutes on each side. Remove and keep warm. Add wine to pan; cook over medium-low heat, stirring to loosen browned bits from pan. Add cream and bring to a boil. Reduce heat; cook and stir until slightly thickened. Stir in rosemary and remaining 3 tablespoons butter until blended. Serve sauce with chicken."),
+            ("Parmesan Chicken Breast",'photos/recipes/Parmesan Chicken Breast.jpg',3,"391 calories","30 minutes","Combine cheese, bread crumbs and butter. Coat chicken breasts with mustard, then dip into crumb mixture. Place breaded chicken in a 13x9-in. baking pan. Bake at 425° until a thermometer inserted in chicken reads 165°, about 15 minutes."),
+            ("Ravioli Lasagna",'photos/recipes/Ravioli Lasagna.jpg',3,"438 calories","40 minutes","In a large skillet, cook and crumble beef over medium heat until no longer pink, 5-7 minutes; drain. In a greased 2-1/2-qt. baking dish, layer a third of the spaghetti sauce, half of the ravioli and beef, and 1/2 cup cheese; repeat layers. Top with remaining sauce and cheese. Cover and bake at 400° until heated through, 40-45 minutes. If desired, top with basil to serve."),
+            ("Sausage Hash",'photos/recipes/Sausage Hash.jpg',3,"245 calories","30 minutes","In a large cast-iron or other heavy skillet, cook the sausage over medium heat until no longer pink; drain. Add the onion, carrots and green pepper; cook until tender. Stir in the potatoes, salt and pepper. Reduce heat; cook and stir until lightly browned and heated through, about 20 minutes."),
+            ("Bacon Chopped Salad",'photos/recipes/Bacon Chopped Salad.jpg',4,"348 calories","20 minutes","Heat chicken according to package directions. Cool slightly; coarsely chop chicken. For dressing, place cheese, vinegar, water and pepper in a small food processor; cover and process until smooth. While processing, gradually add oil in a steady stream. In a large bowl, combine romaine, chicken, tomatoes and bacon. Serve with dressing."),
+            ("Caesar Salad",'photos/recipes/Caesar Salad.jpg',4,"265 calories","10 minutes","Place lettuce in a large salad bowl. Combine the next 6 ingredients in a blender; process until smooth. Pour over lettuce and toss to coat. Squeeze lemon juice over lettuce. Sprinkle with pepper, cheese and croutons."),
+            ("Caprese Salad",'photos/recipes/Caprese Salad.jpg',4,"256 calories","15 minutes","Arrange the tomatoes, cheese and basil on a serving platter. Whisk the vinaigrette ingredients; drizzle over salad. If desired, sprinkle with additional salt and pepper."),
+            ("Garden Tomato Salad",'photos/recipes/Garden Tomato Salad.jpg',4,"92 calories","15 minutes","In a large bowl, combine tomatoes, onion and cucumber. In a small bowl, whisk dressing ingredients until blended. Drizzle over salad; gently toss to coat. Serve immediately."),
+            ("Greek Salad",'photos/recipes/Greek Salad.jpg',4,"148 calories","20 minutes","Place tomatoes, cucumbers and onion in a large bowl. In a small bowl, whisk oil, vinegar, salt and pepper and, if desired, oregano until blended. Drizzle over salad; toss to coat. Top with olives and cheese."),
+            ("Berry Dream Cake",'photos/recipes/Berry Dream Cake.jpg',5,"306 calories","45 minutes","Prepare and bake cake mix batter according to package directions, using a greased 13x9-in. baking pan. In a small bowl, add boiling water to gelatin; stir 2 minutes to completely dissolve. Cool cake on a wire rack 3-5 minutes. Using a wooden skewer, pierce holes in top of cake to within 1 in. of edge, twisting skewer gently to make slightly larger holes. Gradually pour gelatin over cake, being careful to fill each hole. Cool 15 minutes. Refrigerate, covered, 30 minutes. In a large bowl, beat cream cheese until fluffy. Fold in whipped topping. Carefully spread over cake. Top with strawberries. Cover and refrigerate for at least 2 hours"),
+            ("Cherry Tarts",'photos/recipes/Cherry Tarts.jpg',5,"362 calories","10 minutes","In a small bowl, beat the cream cheese, sugar and extract until smooth. Spoon into shells. Top with pie filling. Refrigerate until serving."),
+            ("Chocolate Molten Cakes",'photos/recipes/Chocolate Molten Cakes.jpg',5,"560 calories","30 minutes","Preheat oven to 425°. In a microwave, melt butter and chocolate; stir until smooth. Stir in wine and vanilla. In a small bowl, beat the egg, egg yolk and confectioners sugar until thick and lemon-colored. Beat in the flour, ginger and cinnamon until well blended. Gradually beat in butter mixture. Transfer to 2 greased 6-oz. ramekins or custard cups. Place ramekins on a baking sheet. Bake until a thermometer inserted in the center reads 160° and sides of cakes are set, 10-12 minutes. Remove from the oven and let stand for 1 minute. Run a knife around edges of ramekins; invert onto dessert plates. Dust with additional confectioners sugar. Serve immediately."),
+            ("Citrus Cider Punch",'photos/recipes/Citrus Cider Punch.jpg',6,"138 calories","5 minutes","In a large punch bowl, combine cider and lemonade. Add lemon slices and apple rings. If desired, serve with additional lemon slices and apple rings."),
+            ("Cranberry Fizz",'photos/recipes/Cranberry Fizz.jpg',6,"154 calories","5 minutes","In a pitcher, combine cranberry, orange and grapefruit juices and sugar. Refrigerate, covered, until chilled. Just before serving, stir in ginger ale. To serve, pour mixture over ice. Garnish with orange slices and cranberries if desired."),
+            ("Pineapple Iced Tea",'photos/recipes/Pineapple Iced Tea.jpg',6,"51 calories","15 minutes","In a large saucepan, bring water to a boil; remove from heat. Add tea bags; steep, covered, 3-5 minutes according to taste. Discard tea bags. Stir in sugar until dissolved. Transfer to a pitcher; cool slightly. Stir in fruit juices. Refrigerate, covered, overnight. Serve over ice. Garnish as desired.")]
 
 
 def insert_ctg(arr):
@@ -1084,12 +1045,12 @@ def insert_ctg(arr):
         C.insert_category(name, num_of_recipes, category_image)
         id += 1
 
-arr_categories=[("Appetizers",'photos/appetizers_recipes/appetizers.jpg'),
-                ("Soups",'photos/soups_recipes/soups.png'),
-                ("Main Dishes",'photos/main_dishes_recipes/main meals.jpeg'),
-                ("Salads",'photos/salads_recipes/salads.jpg'),
-                ("Deserts",'photos/desserts_recipes/deserts.jpg'),
-                ("Drinks",'photos/drinks_recipes/drinks.png')]
+arr_categories=[("Appetizers",'photos/categories/Appetizers.jpg'),
+                ("Soups",'photos/categories/Soups.jpg'),
+                ("Main Dishes",'photos/categories/Main Dishes.jpeg'),
+                ("Salads",'photos/categories/Salads.jpg'),
+                ("Deserts",'photos/categories/Deserts.jpg'),
+                ("Drinks",'photos/categories/Drinks.png')]
 #___________________________________________________________
 
 def insert_ing(arr):
@@ -1124,16 +1085,16 @@ arr_ingredients=[("Onion","1 medium",1),("Minced fresh chives","2 tablespoons",1
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # recipes = {}
 # #
-# # for index, recipe in enumerate(arr_recipes):
-# #     name = recipe[0]
-# #     recipes[index+1] = name
-# # # print(recipes)
-# #
-# # # Loop through array and replace numbers with recipe names
-# # for i in range(len(arr_ingredients)):
-# #     recipe_num = arr_ingredients[i][2]
-# #     recipe_name = recipes[recipe_num]
-# #     arr_ingredients[i] = (arr_ingredients[i][0], arr_ingredients[i][1], recipe_name)
+# for index, recipe in enumerate(arr_recipes):
+#     name = recipe[0]
+#     recipes[index+1] = name
+# # print(recipes)
+#
+# # Loop through array and replace numbers with recipe names
+# for i in range(len(arr_ingredients)):
+#     recipe_num = arr_ingredients[i][2]
+#     recipe_name = recipes[recipe_num]
+#     arr_ingredients[i] = (arr_ingredients[i][0], arr_ingredients[i][1], recipe_name)
 #
 #
 # insert_rcp(arr_recipes)
@@ -1141,42 +1102,8 @@ arr_ingredients=[("Onion","1 medium",1),("Minced fresh chives","2 tablespoons",1
 # insert_ctg(arr_categories)
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-# R.get_one_recipe2()
-# I.get_one_ingredient2()
-# print("_____________________________")
-# C.get_num_of_recipes("Salads")
-# R.get_one_recipe("Onion Cheese Soup")
-# R.get_cooking_time("Onion Cheese Soup")
-# R.get_one_recipe("Tortellini Spinach Soup")
-# U.get_email_by_name("arina24")
 
-# U.get_one_user("arina24")
+# U.insert_user("user1@gmail.com","user1","3456")
+# U.insert_user("user2@gmail.com","user2","6789")
+# U.insert_user("user3@gmail.com","user3","7654")
 
-
-# U.check_user("arina","1234")
-
-# print(I.get_ingredients_by_recipe_name("Chocolate Molten Cakes"))
-
-# print(U.get_all_users("arina24"))
-# print(F.get_all_recipes("new1"))
-# U.insert_user("new2@gmail.com","new2","567")
-# U.insert_user("new3@gmail.com","new3","789")
-
-# H.insert_recipe("first")
-# H.insert_recipe("second")
-# print(H.get_all_recipes())
-
-# print(H.get_all_recipes("arina24"))
-# H.delete_all_recipes("arina24")
-
-# F.check_recipe("Ravioli Lasagna","arina24")
-
-# print(R.get_recipe_names())
-# arr=["Tomatoes(4 large)","Red onion(1 small)"]
-# S.delete_ingredients_by_name_and_username(arr,"arina24")
-# print(S.get_ingredients_by_username("arina24"))
-# print(R.get_name_and_image_by_ctg_id(1))
-# U.update_password("arina24","123")
-# S.check_ingredient("Dried basil(1/2 teaspoon)","arina24")
-# print(S.check_ingredient("Salt(1/2 teaspoon)","arina24"))
-# print(R.get_count_recipes_same_ctg(3))

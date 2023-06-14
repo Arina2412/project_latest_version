@@ -23,8 +23,8 @@ class MainScreen(tkinter.Toplevel):
         self.create_gui()
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
-        # self.protocol("WM_DELETE_WINDOW", lambda: self.logout(self.parent.parent.client_socket))
 
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -37,36 +37,17 @@ class MainScreen(tkinter.Toplevel):
         self.entry_search.config(fg="grey")
 
         self.recipes_box = Listbox(self, width=80)
-        recipes_names = self.get_all_recipes_names(self.parent.parent.client_socket)
+        self.recipes_names = self.get_all_recipes_names(self.parent.parent.client_socket)
 
-        def search():
-            self.recipes_box.delete(0, END)
-            self.recipes_box.lift()
-            search_term = self.entry_search.get().lower()
-            matching_items = [item for item in recipes_names if search_term in item.lower()]
-            for item in matching_items:
-                self.recipes_box.insert(END, item)
-            if matching_items:
-                self.recipes_box.place(x=self.entry_search.winfo_x(),
-                                       y=self.entry_search.winfo_y() + self.entry_search.winfo_height())
-            else:
-                self.recipes_box.place_forget()
 
-        def open_recipe_window():
-            selected_item = self.recipes_box.get(ACTIVE)
-            if selected_item:
-                self.selected_item = selected_item
-                print(self.selected_item)
-                self.get_recipe(self.selected_item, self.parent.parent.client_socket, self.username)
-            self.recipes_box.place_forget()
 
-        self.entry_search.bind("<KeyRelease>", lambda event: search())
+        self.entry_search.bind("<KeyRelease>", lambda event: self.search())
 
         self.img_search = Image.open('photos/other_photos/loupe.png')
         self.resized = self.img_search.resize((20, 18), Image.LANCZOS)
         self.image_loupe = ImageTk.PhotoImage(self.resized)
         self.btn_loupe = Button(self.head_frame, image=self.image_loupe, bd=0, bg="#658864", fg="white",
-                                activebackground="#658864", activeforeground="white", command=open_recipe_window)
+                                activebackground="#658864", activeforeground="white", command=self.open_recipe_window)
         self.btn_loupe.place(x=550, y=47)
         #_______________________________________________________________________________
         self.toogle_btn=Button(self.head_frame,text="☰",bg="#658864",fg="white",
@@ -119,6 +100,30 @@ class MainScreen(tkinter.Toplevel):
                                 width=21, font=('Calibri', 10)).place(x=330, y=660)
         # _______________________________________________________________________________
 
+    #פונקציה מחפשת מתכון שהוקלד בשורת החיפוש
+    def search(self):
+        self.recipes_box.delete(0, END)
+        self.recipes_box.lift()
+        search_term = self.entry_search.get().lower()
+        matching_items = [item for item in self.recipes_names if search_term in item.lower()]
+        for item in matching_items:
+            self.recipes_box.insert(END, item)
+        if matching_items:
+            self.recipes_box.place(x=self.entry_search.winfo_x(),
+                                   y=self.entry_search.winfo_y() + self.entry_search.winfo_height())
+        else:
+            self.recipes_box.place_forget()
+
+    #פונקציה מעבירה למסך המתכון(משורת החיפוש)
+    def open_recipe_window(self):
+        selected_item = self.recipes_box.get(ACTIVE)
+        if selected_item:
+            self.selected_item = selected_item
+            print(self.selected_item)
+            self.get_recipe(self.selected_item, self.parent.parent.client_socket, self.username)
+        self.recipes_box.place_forget()
+
+    #פונקציה מייצרת רשימת התפריט
     def toogle_menu(self):
         def collapse_toogle_menu():
             self.toogle_menu_fm.destroy()
@@ -153,7 +158,7 @@ class MainScreen(tkinter.Toplevel):
         #__________________________________________________________________________
         self.log_out_btn = Button(self.toogle_menu_fm, text="Log out",
                                         font=("Calibri", 16), bd=0, bg="#658864", fg="white",
-                                        activebackground="#658864", activeforeground="white",command=lambda :self.logout(self.parent.parent.client_socket))
+                                        activebackground="#658864", activeforeground="white",command=lambda :self.logout())
         self.log_out_btn.place(x=20, y=320)
         #__________________________________________________________________________
         window_height = self.winfo_height()
@@ -163,24 +168,15 @@ class MainScreen(tkinter.Toplevel):
         self.toogle_btn.config(command=collapse_toogle_menu)
         #__________________________________________________________________________
 
-    def if_exist(self, file_path):
-        return os.path.isfile(file_path)
-
+    #פונקציה מחזירה מיקומו של התמונת הקטגוריה
     def get_category_image(self, category_name):
         arr = ["get_category_image_path", category_name]
         str_get_category_image = "*".join(arr)
         self.parent.parent.send_msg(str_get_category_image, self.parent.parent.client_socket)
         image_path = self.parent.parent.recv_msg(self.parent.parent.client_socket)
-        # if not self.if_exist(image_path):
-        #     arr2 = ["get_category_image_data", category_name]
-        #     str_get_category_image_data = "*".join(arr2)
-        #     self.parent.parent.send_msg(str_get_category_image_data, self.parent.parent.client_socket)
-        #     image_data=self.parent.parent.recv_msg(self.parent.parent.client_socket)
-        #     with open(image_path, "wb") as f:
-        #         f.write(image_data)
-        #         f.close()
         return image_path
 
+    #פונקציה מחזירה כמות המתכונים של הקטגוריה
     def get_num_of_recipes(self,category_name):
         arr=["get_num_of_recipes",category_name]
         str_get_num_recipes = "*".join(arr)
@@ -189,6 +185,7 @@ class MainScreen(tkinter.Toplevel):
         arr = data.split("*")
         return arr[0]
 
+    #פונקציה פותחת מסך הפרופיל עם כתובת המייל של המשתמש שקיבלה מהשרת
     def get_email(self, username, client_socket):
         arr = ["get_email", username]
         str_get_email = "*".join(arr)
@@ -199,6 +196,7 @@ class MainScreen(tkinter.Toplevel):
         # print(arr)
         self.open_profile_screen(arr)
 
+    #פונקציה פותחת מסך היסטוריית המתכונים עם היסטוריית המתכונים של המשתמש שקיבלה מהשרת
     def get_history(self,client_socket,username):
         arr=["get_history",username]
         str_get_history="*".join(arr)
@@ -209,6 +207,7 @@ class MainScreen(tkinter.Toplevel):
         # print("Recipe: "+arr[0])
         self.open_history_screen(arr)
 
+    #פונקציה פותחת מסך המועדפים היסטוריית המתכונים המועדפים של המשתמש שקיבלה מהשרת
     def get_favorites(self,client_socket,username):
         arr=["get_favorites",username]
         str_get_favorites="*".join(arr)
@@ -219,6 +218,7 @@ class MainScreen(tkinter.Toplevel):
         # print("Recipe: "+arr[0])
         self.open_favorites_screen(arr)
 
+    #פונקציה פותחת מסך המתכונים ששיתפו עם המשתמש עם היסטוריית המתכונים שנשלחו למשתמש שקיבלה מהשרת
     def get_received_recipes(self,client_socket,username):
         arr=["get_received_recipes",username]
         str_get_received_recipes="*".join(arr)
@@ -228,6 +228,7 @@ class MainScreen(tkinter.Toplevel):
         # print(arr2)
         self.open_received_recipes_screen(arr2)
 
+    #פונקציה מחזירה שמות של כל המתכונים
     def get_all_recipes_names(self,client_socket):
         arr=["get_all_recipes_names"]
         str_get_all_recipes_names = "*".join(arr)
@@ -237,6 +238,7 @@ class MainScreen(tkinter.Toplevel):
         # print(arr_recipes_names)
         return arr_recipes_names
 
+    #פונקציה פותחת מסך של המתכון עפ פרטי המתכון שקיבלה מהשרת
     def get_recipe(self, name, client_socket, username):
         check=2
         arr = ["get_one_recipe", name]
@@ -247,6 +249,7 @@ class MainScreen(tkinter.Toplevel):
         arr = data.split("*")
         self.open_recipes_screen(name, arr, username,check)
 
+    # פונקציה פותחת מסך של רשימת הקניות עם רשימת המצרכים שקיבלה מהשרת
     def get_ingredients(self,client_socket):
         arr=["get_ingredients_by_username",self.username]
         str_get_ingredients="*".join(arr)
@@ -256,93 +259,93 @@ class MainScreen(tkinter.Toplevel):
         arr2 = data.split("#")
         self.open_shopping_list_screen(arr2)
 
-
+    #פונקציה מעבירה למסך הקטגוריה של המתאבנים
     def open_appetizers_screen(self):
         window = AppetizersScreen(self,self.username)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה מעבירה למסך הקטגוריה של המרקים
     def open_soups_screen(self):
         window = SoupsScreen(self,self.username)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה מעבירה למסך הקטגוריה של המנות עיקריות
     def open_main_dishes_screen(self):
         window = MainDishesScreen(self,self.username)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה מעבירה למסך הקטגוריה של הסלטים
     def open_salad_screen(self):
         window = SaladsScreen(self,self.username)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה מעבירה למסך הקטגוריה של הקינוחים
     def open_desserts_screen(self):
         window = DessertsScreen(self,self.username)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה מעבירה למסך הקטגוריה של המשקאות
     def open_drinks_screen(self):
         window = DrinksScreen(self,self.username)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה מעבירה למסך הפרופיל של המשתמש
     def open_profile_screen(self,email):
         window = ProfileScreen(self,self.username,email)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה מעבירה למסך המועדפים
     def open_favorites_screen(self,arr):
         window = FavoritesScreen(self,arr,self.username)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה מעבירה למסך ההיסטוריה של המתכונים
     def open_history_screen(self,arr):
         window = HistoryScreen(self,arr,self.username)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה מעבירה למסך המתכונים ששיתפו עם המשתמש
     def open_received_recipes_screen(self,arr):
         window = ReceivedRecipesScreen(self,arr,self.username)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה מעבירה למסך הרשימה של הקניות
     def open_shopping_list_screen(self,arr):
         window = ShoppingListScreen(self,self.username,arr)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה מעבירה למסך המתכון
     def open_recipes_screen(self, recipe_name, data_recipe, username,check):
         window = RecipesScreen(self, recipe_name, data_recipe, username,check)
         window.grab_set()
         self.withdraw()
 
-    def logout(self,client_socket):
-        # arr = ["log_out"]
-        # str_log_out = "*".join(arr)
-        # client_socket.send(str_log_out.encode())
-        # data = client_socket.recv(1024).decode()
-        # if data == "Server is shutting down":
-        #     client_socket.close()
-        #     self.return_back_to_start_screen()
-        #     self.parent.parent.running = False
-        # else:
-        #     messagebox.showerror("Error","Try again")
+    #פונקציה מציגה הודעה האם משתמש רוצה לצאת מהאפליקציה וסוגרת את הצד של הקליינט
+    def logout(self):
         if messagebox.askokcancel("Log out", "Do you want to log out?"):
             self.parent.parent.send_msg("log_out", self.parent.parent.client_socket)
             self.parent.parent.running = False
             self.return_back_to_start_screen()
 
+    #פונקציה מחזירה למסך הפתיחה
     def return_back_to_start_screen(self):
         self.parent.parent.deiconify()
         self.destroy()
 
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון אפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
             self.parent.parent.send_msg("closed", self.parent.parent.client_socket)
             self.parent.parent.running = False
             self.destroy()
-
-
-
-

@@ -42,7 +42,7 @@ class RecipesDb(object):
             print("Failed to insert recipe:", e)
             return False
 
-    #פונקציה שמחזירה את פרטי המתכון
+    # פונקציה מחזירה את פרטי המתכון
     def get_one_recipe(self,recipe_name):
         arr=[]
         try:
@@ -62,7 +62,7 @@ class RecipesDb(object):
         except:
             return "Trouble in DataBase"
 
-    #
+    #פונקציה מחזירה שם ומיקום התמונה של הקטגוריה
     def get_name_and_image_by_ctg_id(self,category_id):
         info= ""
         arr = []
@@ -85,6 +85,7 @@ class RecipesDb(object):
         except:
             return "Trouble in DataBase"
 
+    #פונקציה מוחקת מתכון מהטבלה
     def delete_recipe(self, recipe_id):
         conn = sqlite3.connect('project_recipes.db')
         str_delete_recipe = "Delete from " + self.__tablename + "where " + self.__recipe_id + "=" + "'" + str(recipe_id) + "'"
@@ -94,6 +95,7 @@ class RecipesDb(object):
         conn.close()
         print("Recipe deleted successfully")
 
+    #פונקציה בוקדת אם מתכון נמצא בטבלה
     def check_recipe(self, recipe_id):
         conn1 = sqlite3.connect('project_recipes.db')
         str_if_exist = "Select * from " + self.__tablename + " where " + self.__recipe_id + " = " + "'" + str(recipe_id) + "'"
@@ -107,6 +109,7 @@ class RecipesDb(object):
             print("Recipe not exists in table")
             return False
 
+    #פונקציה מחזירה זמן ההכנה של המתכון
     def get_cooking_time(self,recipe_name):
         info= ""
         try:
@@ -125,6 +128,7 @@ class RecipesDb(object):
         except:
             return "Trouble in DataBase"
 
+    #פונקציה מחזירה שמות של כל המתכונים
     def get_recipe_names(self):
         info=""
         arr=[]
@@ -145,6 +149,7 @@ class RecipesDb(object):
         except:
             return "Trouble in DataBase"
 
+    #פונקציה מחזירה כמות המתכונים בקטגוריה מסוימת
     def get_count_recipes_same_ctg(self,category_id):
         conn = sqlite3.connect('project_recipes.db')
         c = conn.cursor()
@@ -172,6 +177,7 @@ class CategoryDb(object):
         conn.commit()
         conn.close()
 
+    #פונקציה מכניסה את פרטי הקטגוריה לטבלה
     def insert_category(self, category_name, number_of_recipes, category_image):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -186,7 +192,7 @@ class CategoryDb(object):
             print("Failed to insert category")
             return False
 
-
+    # פונקציה מחזירה את פרטי הקטגוריה
     def get_one_category(self,category_id):
         info = ""
         try:
@@ -205,6 +211,7 @@ class CategoryDb(object):
         except:
             return "Trouble in DataBase"
 
+    #פונקציה מחזירה את כמות המתכונים השייכים לקטגוריה
     def get_num_of_recipes(self,category_name):
         info= ""
         try:
@@ -223,6 +230,7 @@ class CategoryDb(object):
         except:
             return "Trouble in DataBase"
 
+    #פונקציה מחזירה את מיקום התמונה של הקטגוריה
     def get_image_path(self,category_name):
         info= ""
         try:
@@ -240,6 +248,7 @@ class CategoryDb(object):
         except:
             return "Trouble in DataBase"
 
+    #פונקציה מוחקת אתהקטגוריה מהטבלה
     def delete_category(self,category_id):
         conn = sqlite3.connect('project_recipes.db')
         str_delete_category = "Delete from " + self.__tablename + "where " + self.__category_id + "=" + "'" + str(category_id) + "'"
@@ -249,6 +258,7 @@ class CategoryDb(object):
         conn.close()
         print("Category deleted successfully")
 
+    #פונקציה מעדכנת את כמות המתכונים בקטגוריה
     def update_number_of_recipes(self,category_id,number_of_recipes):
         conn = sqlite3.connect('project_recipes.db')
         str_update_num_of_recipes = "Update " + self.__tablename + "set " + self.__number_of_recipes + "=" + "'" + str(number_of_recipes) + "'"
@@ -258,7 +268,6 @@ class CategoryDb(object):
         conn.commit()
         conn.close()
         print("Number of recipes updated successfully")
-
 
 
 class UsersDb(object):
@@ -280,6 +289,7 @@ class UsersDb(object):
         conn.commit()
         conn.close()
 
+    #פונקציה מכניסה את פרטי המשתמש לטבלה
     def insert_user(self, user_email, user_name, password):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -301,6 +311,7 @@ class UsersDb(object):
             return False
 
 
+    # פונקציה מחזירה את פרטי המשתמש
     def get_one_user(self, user_name):
         info = ""
         try:
@@ -321,6 +332,7 @@ class UsersDb(object):
             return "Trouble in DataBase"
 
 
+    # פונקציה מחזירה פרטים של כל המשתמשים
     def get_all_users(self,username):
         info=""
         arr=[]
@@ -346,6 +358,8 @@ class UsersDb(object):
             print("Error while connecting to database:", e)
             return "Trouble in DataBase"
 
+
+    # פונקציה מחזירה את פרטי האימייל של המשתמש
     def get_email_by_name(self,username):
         info = ""
         try:
@@ -364,6 +378,8 @@ class UsersDb(object):
         except:
             return "Trouble in DataBase"
 
+
+    # פונקציהבודקת אם המשתמש קיים בטבלה
     def check_user(self, user_name, password):
         conn = sqlite3.connect('project_recipes.db')
         salt = "ARINA"
@@ -383,6 +399,7 @@ class UsersDb(object):
             print("User is not exist in table")
             return "Fail"
 
+    # פונקציה מעדכנת את כתובת המייל של המשתמש
     def update_email(self,username,user_email):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -398,23 +415,28 @@ class UsersDb(object):
             print("Failed to change email")
             return False
 
+    # פונקציה מעדכנת את הסיסמא של המשתמש
     def update_password(self,username,user_password):
         try:
-            conn = sqlite3.connect('project_recipes.db')
-            salt = "ARINA"
-            md5hash = hashlib.md5(salt.encode('utf-8') + user_password.encode()).hexdigest()
-            str_update_password = "Update " + self.__tablename + " set " + self.__password + "=" + "'" + str(md5hash) + "'"
-            str_update_password += " where " + self.__user_name + "=" + "'" + str(username) + "'"
-            print(str_update_password)
-            conn.execute(str_update_password)
-            conn.commit()
-            conn.close()
-            print("Password updated successfully")
-            return True
+            if self.check_user(username, user_password) == True:
+                conn = sqlite3.connect('project_recipes.db')
+                salt = "ARINA"
+                md5hash = hashlib.md5(salt.encode('utf-8') + user_password.encode()).hexdigest()
+                str_update_password = "Update " + self.__tablename + " set " + self.__password + "=" + "'" + str(md5hash) + "'"
+                str_update_password += " where " + self.__user_name + "=" + "'" + str(username) + "'"
+                print(str_update_password)
+                conn.execute(str_update_password)
+                conn.commit()
+                conn.close()
+                print("Password updated successfully")
+                return True
+            elif self.check_user(username, user_password) == "Fail":
+                return "Fail,user doesn't exist"
         except:
             print("Failed to change password")
             return False
 
+    # פונקציה מוחקת את פרטי המשתמש מהטבלה
     def delete_user(self,username):
         conn = sqlite3.connect('project_recipes.db')
         str_delete_user = "Delete from " + self.__tablename + " where " + self.__user_name + "=" + "'" + username + "'"
@@ -442,6 +464,7 @@ class IngredientsDb(object):
         conn.commit()
         conn.close()
 
+    #פונקציה מכניסה את פרטי המצרך לטבלה
     def insert_ingredient(self, ingredient_name, ingredient_amount, recipe_name):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -456,6 +479,7 @@ class IngredientsDb(object):
             print("Failed to insert ingredient")
             return False
 
+    # פונקציה מחזירה את פרטי המצרך
     def get_one_ingredient(self, ingredient_id):
         info = ""
         try:
@@ -476,6 +500,7 @@ class IngredientsDb(object):
         except:
             return "Trouble on db"
 
+    # פונקציה מחזירה את המצרכים של המתכון מסוים
     def get_ingredients_by_recipe_name(self,recipe_name):
         info = ""
         arr=[]
@@ -499,6 +524,7 @@ class IngredientsDb(object):
         except:
             return "Trouble on db"
 
+    # פונקציה מחזירה פרטים של כל המתכונים
     def get_all_ingredients(self):
         conn = sqlite3.connect('project_recipes.db')
         str_get_all_ingredients = "Select * from "+ self.__tablename
@@ -512,6 +538,7 @@ class IngredientsDb(object):
         print("Success")
         conn.close()
 
+    # פונקציה מחזירה את פרטי המצרך עם שם המתכון
     def get_one_ingredient_with_recipe_name(self):
         conn = sqlite3.connect('project_recipes.db')
         str = ("""
@@ -528,6 +555,7 @@ class IngredientsDb(object):
         conn.commit()
         conn.close()
 
+    # פונקציה בודקת אם המצרך קיים בטבלה
     def check_ingredient(self,ingredient_id):
         conn1 = sqlite3.connect('project_recipes.db')
         str_if_exist = "Select * from " + self.__tablename + " where " + self.__ingredient_id + " = " + "'" + str(
@@ -542,6 +570,7 @@ class IngredientsDb(object):
             print("Ingredient not exists in table")
             return False
 
+    #פונקציה מוחקת את המצרך מהטבלה
     def delete_ingredient(self,ingredient_id):
         conn = sqlite3.connect('project_recipes.db')
         str_delete_ingredient = "Delete from " + self.__tablename + " where " + self.__ingredient_id + "=" + "'" + str(
@@ -578,6 +607,7 @@ class HistoryRecipesDb(object):
         conn.commit()
         conn.close()
 
+    #פונקציה שמכניסה את פרטי המתכון לטבלה
     def insert_recipe(self, recipe_name, recipe_image_path, nutritions, cooking_time, description, username):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -597,7 +627,7 @@ class HistoryRecipesDb(object):
             print("Failed to insert recipe:", e)
             return False
 
-
+    # פונקציה מחזירה את פרטי המתכון
     def get_one_recipe(self,recipe_name):
         arr=[]
         try:
@@ -617,6 +647,7 @@ class HistoryRecipesDb(object):
         except:
             return "Trouble in DataBase"
 
+    #פונקציה מחזירה את כל המתכונים השייכים למשתמש מסוים
     def get_all_recipes(self,username):
         info=""
         arr=[]
@@ -639,6 +670,7 @@ class HistoryRecipesDb(object):
         except:
             return "Trouble on db"
 
+    #פונקציה מוחקת את כל המתכונים השייכים למשתמש מסוים
     def delete_all_recipes(self,username):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -660,6 +692,7 @@ class HistoryRecipesDb(object):
         except:
             return "Trouble on db"
 
+    #פונקציה בודקת את המתכון השייך למשתמש מסוים קיים בטבלה
     def check_recipe(self, recipe_name, username):
         conn1 = sqlite3.connect('project_recipes.db')
         str_if_exist = "Select * from " + self.__tablename + " where " + self.__recipe_name + " = " + "'" + recipe_name + "' and " + self.__username + " = " + "'" + username + "'"
@@ -672,6 +705,32 @@ class HistoryRecipesDb(object):
         else:
             # print("Recipe not exists in table")
             return False
+
+    #פונקציה מוחקת את המתכונים בקיבלה במערך ששייכים למשתמש מסוים
+    def delete_few_recipes(self, username, arr):
+        try:
+            conn = sqlite3.connect('project_recipes.db')
+            str_delete_recipe = "DELETE FROM " + self.__tablename + " WHERE " + self.__username + " = ? AND recipe_name = ?"
+
+            recipes_deleted = 0
+
+            for recipe_name in arr:
+                cursor = conn.execute(str_delete_recipe, (username, recipe_name))
+                if cursor.rowcount > 0:
+                    recipes_deleted += 1
+
+            conn.commit()
+            conn.close()
+
+            if recipes_deleted > 0:
+                print("Recipes deleted successfully")
+                return True
+            else:
+                print("Recipes deleted successfully")
+                return False
+        except:
+            return "Trouble on db"
+
 
 class FavoritesRecipesDb(object):
     def __init__(self, tablename="FavoritesRecipesDb",recipe_id="recipe_id", recipe_name="recipe_name",recipe_image_path="recipe_image_path", nutritions="nutritions", cooking_time="cooking_time", description="description",username="username"):
@@ -698,6 +757,7 @@ class FavoritesRecipesDb(object):
         conn.commit()
         conn.close()
 
+    #פונקציה שמכניסה את פרטי המתכון לטבלה
     def insert_recipe(self, recipe_name, recipe_image_path, nutritions, cooking_time, description, username):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -717,7 +777,7 @@ class FavoritesRecipesDb(object):
             print("Failed to insert recipe:", e)
             return False
 
-
+    # פונקציה מחזירה את פרטי המתכון
     def get_one_recipe(self,recipe_name):
         arr=[]
         try:
@@ -737,6 +797,7 @@ class FavoritesRecipesDb(object):
         except:
             return "Trouble in DataBase"
 
+    #פונקציה מחזירה את כל המתכונים
     def get_all_recipes(self,username):
         info=""
         arr=[]
@@ -759,6 +820,7 @@ class FavoritesRecipesDb(object):
         except:
             return "Trouble on db"
 
+    #פונקציה מוחקת את כל המתכונים השייכים למשתמש מסוים
     def delete_all_recipes(self,username):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -777,7 +839,7 @@ class FavoritesRecipesDb(object):
         except:
             return "Trouble on db"
 
-
+    #פונקציה בודקת את המתכון השייך למשתמש מסוים קיים בטבלה
     def check_recipe(self, recipe_name, username):
         conn1 = sqlite3.connect('project_recipes.db')
         str_if_exist = "Select * from " + self.__tablename + " where " + self.__recipe_name + " = " + "'" + recipe_name + "' and "+self.__username + " = "+ "'" + username+ "'"
@@ -818,6 +880,7 @@ class SendReceiveRecipesDb(object):
         conn.commit()
         conn.close()
 
+    #פונקציה שמכניסה את פרטי המתכון לטבלה
     def insert_recipe(self, recipe_name, recipe_image_path, nutritions, cooking_time, description, from_username,to_username):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -837,7 +900,7 @@ class SendReceiveRecipesDb(object):
             print("Failed to insert recipe:", e)
             return False
 
-
+    # פונקציה מחזירה את פרטי המתכון
     def get_one_recipe(self,recipe_name):
         arr=[]
         try:
@@ -857,6 +920,7 @@ class SendReceiveRecipesDb(object):
         except:
             return "Trouble in DataBase"
 
+    #פונקציה מחזירה את כל המתכונים השייכים למשתמש מסוים
     def get_all_recipes(self,to_username):
         info=""
         arr=[]
@@ -878,6 +942,7 @@ class SendReceiveRecipesDb(object):
         except:
             return "Trouble on db"
 
+    #פונקציה מוחקת את כל המתכונים השייכים למשתמש מסוים
     def delete_all_recipes(self,to_username):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -896,7 +961,7 @@ class SendReceiveRecipesDb(object):
         except:
             return "Trouble on db"
 
-
+    #פונקציה בודקת את המתכון השייך למשתמש מסוים קיים בטבלה
     def check_recipe(self, recipe_name,from_username, to_username):
         conn1 = sqlite3.connect('project_recipes.db')
         str_if_exist = "Select * from " + self.__tablename + " where " + self.__recipe_name + " = " + "'" + recipe_name + "' and "+self.__from_username + " = "+ "'" + from_username +"' and "+self.__to_username + " = "+ "'" + to_username+ "'"
@@ -927,6 +992,7 @@ class ShoppingListDb(object):
         conn.commit()
         conn.close()
 
+    #פונקציה מכניסה את פרטי המצרך לטבלה
     def insert_ingredient(self, ingredient_name, username):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -945,6 +1011,7 @@ class ShoppingListDb(object):
             print("Failed to insert ingredient")
             return False
 
+    #פונקציה מחזירה מצרכים השייכים למשתמש מסוים
     def get_ingredients_by_username(self,username):
         info = ""
         arr=[]
@@ -968,7 +1035,7 @@ class ShoppingListDb(object):
         except:
             return "Trouble on db"
 
-
+    # פונקציה בודקת אם המצרך קיים בטבלה
     def check_ingredient(self,ingredient_name,username):
         conn1 = sqlite3.connect('project_recipes.db')
         str_if_exist = "SELECT * FROM " + self.__tablename + " WHERE " + self.__ingredient_name + " = '" + ingredient_name + "' AND " + self.__username + " = '" + username + "'"
@@ -982,6 +1049,7 @@ class ShoppingListDb(object):
             print("Ingredient not exists in table")
             return False
 
+    #פונקציה מוחקת את המצרכים מהטבלה לפי פרטי המשתמש אליו הם שייכים
     def delete_ingredients_by_name_and_username(self, arr, username):
         try:
             conn = sqlite3.connect('project_recipes.db')
@@ -1106,4 +1174,12 @@ arr_ingredients=[("Onion","1 medium",1),("Minced fresh chives","2 tablespoons",1
 # U.insert_user("user1@gmail.com","user1","3456")
 # U.insert_user("user2@gmail.com","user2","6789")
 # U.insert_user("user3@gmail.com","user3","7654")
+# U.insert_user("user4@gmail.com","user4","user0000")
+
+
+
+
+
+
+
 

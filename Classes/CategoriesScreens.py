@@ -1,6 +1,7 @@
 from RecipesScreen import *
 import os
 
+#פונקציה מייצרת מסך המתכון
 def create_recipes_screen(self,arr2,client_socket,username):
     frame = Frame(self,bg="#B5D5C5")
     frame.pack(padx=10, pady=10)
@@ -23,7 +24,7 @@ def create_recipes_screen(self,arr2,client_socket,username):
         elif count > 1 and count % 2 != 0:
             button.grid(row=row, column=col, padx=(45, 20), pady=(10, 10))
 
-
+#פונקציה פותחת מסך המתכון עם פרטי המתכון שקיבלה מהמשתמש
 def get_recipe(self,name,client_socket,username):
     arr = ["get_one_recipe", name]
     str_get_recipe = "*".join(arr)
@@ -35,11 +36,13 @@ def get_recipe(self,name,client_socket,username):
     # print("Length: "+str(len(arr)))
     insert_recipe(self,arr,client_socket,username)
 
+#פונקציה מעבירה למסך המתכון
 def open_recipes_screen(self,recipe_name,data_recipe,username):
     window = RecipesScreen(self,recipe_name,data_recipe,username,1)
     window.grab_set()
     self.withdraw()
 
+#פונקציה שולחת פרטי המתכון לשרת למטרת הכנסתו לטבלת היסטוריית המתכונים
 def insert_recipe(self,arr,client_socket,username):
     arr=["insert_recipe_history",arr[1],arr[2],arr[3],arr[4],arr[5],username]
     str_insert = "*".join(arr)
@@ -52,26 +55,42 @@ def insert_recipe(self,arr,client_socket,username):
     else:
         return False
 
-def if_exist(self, file_path):
+#פונקציה בודקת אם קיים המסמך ומחזירה את מיקומו
+def if_exist(file_path):
     return os.path.isfile(file_path)
 
-def get_recipe_image(self,category_id,client_socket):
+#פונקציה מחזירה מיקומו של התמונת המתכון
+def get_recipe_image(self, category_id, client_socket):
     arr = ["get_recipe_name_and_image_path", str(category_id)]
-    str_get_recipe_name_and_image= "*".join(arr)
+    str_get_recipe_name_and_image = "*".join(arr)
     self.parent.parent.parent.send_msg(str_get_recipe_name_and_image, client_socket)
     images_path = self.parent.parent.parent.recv_msg(client_socket)
     arr = images_path.split("#")
-    # for x in arr:
-    #     if not if_exist(self,x):
-    #         arr2=["get_recipe_name_and_image_data", str(category_id)]
+
+    # arr = images_path.split("#")
+    # recipe_names = [recipe.split('^')[0] for recipe in arr]
+    # paths_of_images = [path.split('^')[1] for path in arr]
+    # recipe_directory = os.path.join("photos", "recipes")
+    #
+    # if not os.path.exists(recipe_directory):
+    #     os.makedirs(recipe_directory)
+    #
+    # for recipe_name, image_path in zip(recipe_names, paths_of_images):
+    #     if not if_exist(image_path):
+    #         arr2 = ["get_recipe_name_and_image_data", str(category_id)]
     #         str_get_category_image_data = "*".join(arr2)
-    #         self.parent.parent.parent.send_msg(str_get_category_image_data,client_socket)
-    #         data=self.parent.parent.parent.recv_msg(client_socket)
-    #         image_data_list = data.split(b"|")
-    #         for image in image_data_list:
-    #             with open(x,'wb') as f:
-    #                 f.write(image)
-    #                 f.close()
+    #         self.parent.parent.parent.send_msg(str_get_category_image_data, client_socket)
+    #         data = self.parent.parent.parent.recv_msg(client_socket, m_type="bytes")
+    #
+    #         if data is not None:
+    #             image_data = data  # Treats data as a single image data
+    #             image_name = os.path.splitext(os.path.basename(image_path))[0]
+    #             image_path = os.path.join(recipe_directory, f"{image_name}.jpg")
+    #             with open(image_path, 'wb') as f:
+    #                 f.write(image_data)
+    #         else:
+    #             print("No image data received.")
+
     return arr
 
 class AppetizersScreen(tkinter.Toplevel):
@@ -97,6 +116,7 @@ class AppetizersScreen(tkinter.Toplevel):
                 self.arr_appetizers.append((image_path,name))
         create_recipes_screen(self,self.arr_appetizers,self.parent.parent.parent.client_socket,username)
 
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -111,10 +131,12 @@ class AppetizersScreen(tkinter.Toplevel):
                                                activeforeground="white", command=self.return_back)
         self.buttonReturnToMainScreen.place(x=5, y=12)
 
+    #פונקציה מחזירה למסך הראשי
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
 
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון אפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
             self.parent.parent.parent.send_msg("closed", self.parent.parent.parent.client_socket)
@@ -144,6 +166,7 @@ class SoupsScreen(tkinter.Toplevel):
                 self.arr_soups.append((image_path, name))
         create_recipes_screen(self, self.arr_soups, self.parent.parent.parent.client_socket, username)
 
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -158,10 +181,12 @@ class SoupsScreen(tkinter.Toplevel):
                                                activeforeground="white", command=self.return_back)
         self.buttonReturnToMainScreen.place(x=5, y=12)
 
+    #פונקציה מייצרת גרפיקה של המסך
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
 
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון אפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
             self.parent.parent.parent.send_msg("closed", self.parent.parent.parent.client_socket)
@@ -191,6 +216,7 @@ class MainDishesScreen(tkinter.Toplevel):
                 self.arr_main_dishes.append((image_path, name))
         create_recipes_screen(self,self.arr_main_dishes,self.parent.parent.parent.client_socket,username)
 
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -205,10 +231,12 @@ class MainDishesScreen(tkinter.Toplevel):
                                                activeforeground="white", command=self.return_back)
         self.buttonReturnToMainScreen.place(x=5, y=12)
 
+    #פונקציה מחזירה למסך הראשי
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
 
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון אפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
             self.parent.parent.parent.send_msg("closed", self.parent.parent.parent.client_socket)
@@ -238,6 +266,7 @@ class SaladsScreen(tkinter.Toplevel):
                 self.arr_salads.append((image_path, name))
         create_recipes_screen(self,self.arr_salads,self.parent.parent.parent.client_socket,username)
 
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -252,10 +281,12 @@ class SaladsScreen(tkinter.Toplevel):
                                                activeforeground="white", command=self.return_back)
         self.buttonReturnToMainScreen.place(x=5, y=12)
 
+    #פונקציה מחזירה למסך הראשי
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
 
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון אפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
             self.parent.parent.parent.send_msg("closed", self.parent.parent.parent.client_socket)
@@ -284,7 +315,7 @@ class DessertsScreen(tkinter.Toplevel):
                 name, image_path = item.split("^")
                 self.arr_desserts.append((image_path, name))
         create_recipes_screen(self,self.arr_desserts,self.parent.parent.parent.client_socket,username)
-
+    #
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -298,11 +329,11 @@ class DessertsScreen(tkinter.Toplevel):
                                                font=("Calibri", 17), activebackground="#658864",
                                                activeforeground="white", command=self.return_back)
         self.buttonReturnToMainScreen.place(x=5, y=12)
-
+    #
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
-
+    #
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
             self.parent.parent.parent.send_msg("closed", self.parent.parent.parent.client_socket)
@@ -331,7 +362,7 @@ class DrinksScreen(tkinter.Toplevel):
                 name, image_path = item.split("^")
                 self.arr_drinks.append((image_path, name))
         create_recipes_screen(self,self.arr_drinks,self.parent.parent.parent.client_socket,username)
-
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -345,11 +376,11 @@ class DrinksScreen(tkinter.Toplevel):
                                                font=("Calibri", 17), activebackground="#658864",
                                                activeforeground="white", command=self.return_back)
         self.buttonReturnToMainScreen.place(x=5, y=12)
-
+    #פונקציה מחזירה למסך הראשי
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
-
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון אפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
             self.parent.parent.parent.send_msg("closed", self.parent.parent.parent.client_socket)

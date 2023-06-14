@@ -38,6 +38,7 @@ class RecipesScreen(tkinter.Toplevel):
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -93,6 +94,8 @@ class RecipesScreen(tkinter.Toplevel):
 
         self.btn_add_to_favorites=Button(self,text=text1,bg="#B5D5C5",activebackground="#B5D5C5",bd=0,font=("Calibri", 20),command=lambda: (toggle_symbol(self.btn_add_to_favorites),self.insert_recipe(self.arr_recipe,self.client_socket,self.username)))
         self.btn_add_to_favorites.place(x=480,y=290)
+
+        #פונקציה מחליפה את הסמל/טקסט של כפתור של הוספה למועדפים
         def toggle_symbol(button):
             if button["text"] == "🤍":
                 button.config(text="🖤")
@@ -102,6 +105,8 @@ class RecipesScreen(tkinter.Toplevel):
         self.btn_share=Button(self,text="🔗",bg="#B5D5C5",activebackground="#B5D5C5",bd=0,font=("Calibri", 20),command=lambda :self.get_users(self.client_socket))
         self.btn_share.place(x=520,y=290)
 
+
+    #פונקציה מחזירה מצרכים של המתכון
     def get_ingredients(self, client_socket):
         arr = ["get_ingredients", self.arr_recipe[1]]
         str_get_ingredients = "*".join(arr)
@@ -111,6 +116,7 @@ class RecipesScreen(tkinter.Toplevel):
         arr2 = data.split("*")
         return arr2
 
+    #פונקציה שולחת פרטי המתכון לשרת למטרת הכנסתו לטבלת המועדפים
     def insert_recipe(self, arr, client_socket, username):
         arr = ["insert_recipe_favorites", arr[1], arr[2], arr[3], arr[4], arr[5], username]
         str_insert = "*".join(arr)
@@ -123,6 +129,7 @@ class RecipesScreen(tkinter.Toplevel):
         else:
             return False
 
+    #פונקציה שולחת פרטי המתכון לשרת למטרת הבדיקה האם המתכון קיים בטבלת המועדפים
     def check_recipe(self,client_socket):
         arr=["check_favorite_recipe",self.recipe_name,self.username]
         str_insert = "*".join(arr)
@@ -134,6 +141,7 @@ class RecipesScreen(tkinter.Toplevel):
         elif data == "Recipe not exists in table":
             return False
 
+    #פונקציה פותחת מסך של בחירת המשתמשים עם רשימת המשתמשים שקיבלה מהשרת
     def get_users(self,client_socket):
         arr=["get_all_users",self.username]
         str_get_recipe = "*".join(arr)
@@ -143,6 +151,7 @@ class RecipesScreen(tkinter.Toplevel):
         print(arr2)
         self.open_choose_screen(arr2)
 
+    #פונקציה שולחת פרטי המתכון לשרת למטרת הכנסתו לטבלת הרשימת הקניות
     def insert_ingredient(self, client_socket, ingredient_name,username):
         arr = ["insert_ingredient", ingredient_name, username]
         str_insert = "*".join(arr)
@@ -156,14 +165,17 @@ class RecipesScreen(tkinter.Toplevel):
             messagebox.showinfo("Exists","You already added this product to shopping list.")
             return False
 
+    #פונקציה מעבירה למסך בחירת המשתמשים
     def open_choose_screen(self,arr):
         window = ChooseScreen(self,arr,self.client_socket,self.arr_recipe,self.username)
         window.grab_set()
 
+    #פונקציה מחזירה למסך הקטגוריה
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
 
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון אפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
             self.send_m("closed", self.client_socket)
@@ -177,6 +189,7 @@ class ChooseScreen(tkinter.Toplevel):
         self.parent=parent
         self.geometry('200x100+500+300')  # set the position of the window to (x=500,y=300)
         self.resizable(False,False)
+        self.iconbitmap('photos/other_photos/icon_recipe.ico')
         self.configure(bg="#B5D5C5")
         self.title('Send')
         self.arr_users=arr
@@ -186,6 +199,7 @@ class ChooseScreen(tkinter.Toplevel):
         #___________________________
         self.create_gui()
 
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.combo = ttk.Combobox(self, values=self.arr_users)
         self.combo.set("Pick an User")
@@ -200,6 +214,7 @@ class ChooseScreen(tkinter.Toplevel):
                             activeforeground="white",command=on_button_click)
         button.pack(padx=5, pady=5)
 
+    #פונקציה שולחת פרטי המתכון לשרת למטרת הכנסתו לטבלת המתכונים המשותפים
     def insert_recipe(self, arr, client_socket, from_username, to_username):
         arr = ["insert_recipe_to_send", arr[1], arr[2], arr[3], arr[4], arr[5],from_username,to_username]
         str_insert = "*".join(arr)

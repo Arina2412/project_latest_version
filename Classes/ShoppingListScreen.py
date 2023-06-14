@@ -35,7 +35,7 @@ class ShoppingListScreen(tkinter.Toplevel):
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -71,6 +71,7 @@ class ShoppingListScreen(tkinter.Toplevel):
                                                activeforeground="white", command=self.return_back)
         self.buttonReturnToMainScreen.place(x=5, y=12)
 
+    #פונקציה מייצרת את מסך המתכון ופותחת אותו
     def create_shopping_list(self):
         count = 0
         Y = 150
@@ -84,9 +85,11 @@ class ShoppingListScreen(tkinter.Toplevel):
             count = count + 1
             Y = Y + 25
 
+    #פונקציה מחליפה גופן של הטקסט
     def change_font(self, current):
         current.config(font=("Calibri", 13, 'overstrike'))
 
+    #פונקציה בודקת אם המצרך קיים במערך ומשנה את הגופן בהתאם
     def add_to_overstrike(self, ingredient_btn, ingredient):
         if ingredient not in self.list:
             self.list.append(ingredient)
@@ -97,6 +100,7 @@ class ShoppingListScreen(tkinter.Toplevel):
             ingredient_btn.config(font=("Calibri", 13))
             return False  # ingredient is exist in the list
 
+    #פונקציה שולחת שם המשתמש לשרת למטרת המחיקה של המצרכים בטבלת רשימת הקניות השייכים לו
     def clear_shopping_list(self, arr_to_delete, username, client_socket):
         arr = ["clear_shopping_list", str(arr_to_delete), username]
         print(arr)
@@ -109,6 +113,7 @@ class ShoppingListScreen(tkinter.Toplevel):
         elif data == "Clearing products failed":
             messagebox.showerror("Fail", "Try again")
 
+    #פונקציה שולחת פרטי המצרך ושם המשתמש לשרת למטרת הכנסתו לטבלה של רשימת הקניות
     def insert_ingredient(self,ingredient,client_socket,username):
         arr = ["insert_ingredient", ingredient, username]
         str_insert = "*".join(arr)
@@ -122,13 +127,14 @@ class ShoppingListScreen(tkinter.Toplevel):
         else:
             messagebox.showerror("Fail", "Try again")
 
-
+    #פונקציה מחזירה למסך הראשי
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
 
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון אפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
-            self.parent.parent.parent.end_msg("closed", self.parent.parent.parent.client_socket)
+            self.parent.parent.parent.send_msg("closed", self.parent.parent.parent.client_socket)
             self.parent.parent.parent.running = False
             self.destroy()

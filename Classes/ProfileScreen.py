@@ -20,6 +20,7 @@ class ProfileScreen(tkinter.Toplevel):
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -77,6 +78,7 @@ class ProfileScreen(tkinter.Toplevel):
                                                activeforeground="white", command=self.return_back)
         self.buttonReturnToMainScreen.place(x=5, y=12)
 
+    #פונקציה שולחת פרטי המשתמש וכתובת המייל לשרת למטרת העדכון כתובת המייל
     def change_email(self):
         arr = ["change_email", self.username, self.en_email.get()]
         str_change = "*".join(arr)
@@ -89,11 +91,12 @@ class ProfileScreen(tkinter.Toplevel):
         else:
             messagebox.showerror("Error", "Try again")
 
+    #פונקציה שולחת פרטי המשתמש וסיסמא לשרת למטרת העדכון סיסמא
     def change_password(self):
         arr = ["change_password", self.username, self.en_password.get()]
         str_change = "*".join(arr)
         print(str_change)
-        self.parent.parent.parent.send_msg(str_change, self.parent.parent.parent.client_socket)
+        self.parent.parent.parent.send_msg(str_change, self.parent.parent.parent.client_socket,"encrypted")
         data = self.parent.parent.parent.recv_msg(self.parent.parent.parent.client_socket)
         print(data)
         if data == "Password changed successfully":
@@ -101,10 +104,13 @@ class ProfileScreen(tkinter.Toplevel):
         else:
             messagebox.showerror("Error", "Try again")
 
+
+    #פונקציה מחזירה למסך הראשי
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
 
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון אפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
             self.parent.parent.parent.end_msg("closed", self.parent.parent.parent.client_socket)

@@ -30,6 +30,7 @@ class FavoritesScreen(tkinter.Toplevel):
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -52,6 +53,7 @@ class FavoritesScreen(tkinter.Toplevel):
                                                activeforeground="white", command=self.return_back)
         self.buttonReturnToMainScreen.place(x=5, y=12)
 
+    #פונקציה מייצרת את מסך המתכון ופותחת אותו
     def create_recipes(self):
         count = 0
 
@@ -94,11 +96,13 @@ class FavoritesScreen(tkinter.Toplevel):
                 button.grid(row=row, column=col, padx=(55, 20), pady=(10, 10))
             count = count + 1
 
+    #פונקציה מעבירה למסך המתכון
     def open_recipes_screen(self, recipe_name, data_recipe, username):
         window = RecipesScreen(self, recipe_name, data_recipe, username,1)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה שולחת שם המשתמש לשרת למטרת המחיקה של המתכונים בהיסטוריה המועדפים השייכים לו
     def clear_favorites(self, username, client_socket):
         arr = ["clear_favorites", username]
         str_clear = "*".join(arr)
@@ -110,12 +114,14 @@ class FavoritesScreen(tkinter.Toplevel):
         elif data == "Clearing history of favorites failed":
             messagebox.showerror("Fail", "Try again")
 
+    #פונקציה מחזירה למסך הראשי
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
 
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון אפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
-            self.parent.parent.parent.end_msg("closed", self.parent.parent.parent.client_socket)
+            self.parent.parent.parent.send_msg("closed", self.parent.parent.parent.client_socket)
             self.parent.parent.parent.running = False
             self.destroy()

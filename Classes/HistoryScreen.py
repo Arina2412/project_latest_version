@@ -29,6 +29,7 @@ class HistoryScreen(tkinter.Toplevel):
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -52,6 +53,7 @@ class HistoryScreen(tkinter.Toplevel):
         self.buttonReturnToMainScreen.place(x=5, y=12)
         # _____________________________________________________________________________________________________
 
+    #פונקציה מייצרת את מסך המתכון ופותחת אותו
     def create_recipes_screen(self):
         count = 0
 
@@ -66,6 +68,10 @@ class HistoryScreen(tkinter.Toplevel):
 
         recipes_frame = Frame(canvas, bg="#B5D5C5")
         canvas.create_window((0, 0), window=recipes_frame, anchor='nw')
+
+        # Store the references to the first two buttons
+        self.first_button = None
+        self.second_button = None
 
         while count < len(self.arr_history) and self.arr_history[count][0] is not None:
             row = count // 2
@@ -84,10 +90,14 @@ class HistoryScreen(tkinter.Toplevel):
                                                                                  self.username))
             button.config(compound='top')
             button.image = image
-            if count <= 1 and count%2 == 0:
-                button.grid(row=row, column=col, padx=(90,0), pady=(70,10))
-            elif count <= 1 and count%2 != 0:
-                button.grid(row=row, column=col, padx=(35,0), pady=(70,10))
+            if count <= 1 and count % 2 == 0:
+                button.grid(row=row, column=col, padx=(90, 0), pady=(70, 10))
+                if count == 0:
+                    self.first_button = button  # Store reference to the first button
+            elif count <= 1 and count % 2 != 0:
+                button.grid(row=row, column=col, padx=(35, 0), pady=(70, 10))
+                if count == 1:
+                    self.second_button = button  # Store reference to the second button
             elif count > 1 and count % 2 == 0:
                 button.grid(row=row, column=col, padx=(100, 15), pady=(10, 10))
             elif count > 1 and count % 2 != 0:
@@ -95,11 +105,13 @@ class HistoryScreen(tkinter.Toplevel):
             # print(recipe_name+str(count))
             count = count + 1
 
+    #פונקציה מעבירה למסך המתכון
     def open_recipes_screen(self, recipe_name, data_recipe,username):
         window = RecipesScreen(self, recipe_name, data_recipe,username,1)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה שולחת שם המשתמש לשרת למטרת המחיקה של המתכונים בהיסטוריה השייכים לו
     def clear_history(self,username,client_socket):
         arr=["clear_history",username]
         str_clear = "*".join(arr)
@@ -111,12 +123,14 @@ class HistoryScreen(tkinter.Toplevel):
         elif data=="Clearing history failed":
             messagebox.showerror("Fail","Try again")
 
+    #פונקציה מחזירה למסך הראשי
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
 
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון אפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
-            self.parent.parent.parent.end_msg("closed", self.parent.parent.parent.client_socket)
+            self.parent.parent.parent.send_msg("closed", self.parent.parent.parent.client_socket)
             self.parent.parent.parent.running = False
             self.destroy()

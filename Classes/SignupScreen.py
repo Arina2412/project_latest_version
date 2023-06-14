@@ -17,8 +17,9 @@ class SignupScreen(tkinter.Toplevel):
         self.UserDb=UsersDb()
         self.create_gui()
 
-        # self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.canvas = Canvas(self, width=600, height=770, bd=0, highlightthickness=0)
         self.canvas.pack()
@@ -59,6 +60,7 @@ class SignupScreen(tkinter.Toplevel):
         self.str.set("")
         self.lbl_answer = self.canvas.create_text(280, 530, text=self.str.get(), fill="red", font=("Calibri", 15))
 
+    #פונקציה שולחת פרטי המשתמש לשרת ורושמת את המשתמש למערכת
     def signup_user(self):
         if len(self.entryEmailSignup1.get()) == 0 or len(self.entryUsernameSignup1.get())==0 or len(self.entryPasswordSignup1.get()) == 0 :
             messagebox.showerror("Error", "Please write your email,username and password")
@@ -67,7 +69,7 @@ class SignupScreen(tkinter.Toplevel):
         arr = ["signup", self.entryEmailSignup1.get(), self.entryUsernameSignup1.get(), self.entryPasswordSignup1.get()]
         str_insert = "*".join(arr)
         print(str_insert)
-        self.parent.send_msg(str_insert,self.parent.client_socket)
+        self.parent.send_msg(str_insert,self.parent.client_socket,"encrypted")
         data=self.parent.recv_msg(self.parent.client_socket)
         print(data)
         if data == "Signed up successfully":
@@ -82,15 +84,18 @@ class SignupScreen(tkinter.Toplevel):
             self.canvas.itemconfig(self.lbl_answer, text=self.str.get())
             # print(self.str.get())
 
+    # פונקציה מעבירה למסך הראשי
     def open_main_screen(self):
         window = MainScreen(self,self.entryUsernameSignup1.get())
         window.grab_set()
         self.withdraw()
 
+    #פונקציה מחזירה למסך הקודם
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
 
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון האפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
             self.parent.send_msg("closed", self.parent.client_socket)

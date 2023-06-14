@@ -31,7 +31,7 @@ class ReceivedRecipesScreen(tkinter.Toplevel):
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-
+    #פונקציה מייצרת גרפיקה של המסך
     def create_gui(self):
         self.head_frame = Frame(self, bg="#658864", highlightbackground="white", highlightthickness=1)
         self.head_frame.pack(side=TOP, fill=X)
@@ -54,7 +54,7 @@ class ReceivedRecipesScreen(tkinter.Toplevel):
                                                activeforeground="white", command=self.return_back)
         self.buttonReturnToMainScreen.place(x=5, y=12)
 
-
+    #פונקציה מייצרת את מסך המתכון ופותחת אותו
     def create_recipes_screen(self):
         count = 0
         btnX = 0
@@ -89,11 +89,15 @@ class ReceivedRecipesScreen(tkinter.Toplevel):
             button.place(x=btnX, y=btnY)
             count = count + 1
 
+
+
+    #פונקציה מעבירה למסך המתכון
     def open_recipes_screen(self, recipe_name, data_recipe, username):
         window = RecipesScreen(self, recipe_name, data_recipe, username,1)
         window.grab_set()
         self.withdraw()
 
+    #פונקציה שולחת שם המשתמש לשרת למטרת המחיקה של המתכונים בהיסטוריה המתכונים שנשלחו לו מהמשתמשים אחרים, השייכים לו
     def clear_received_recipes(self, username, client_socket):
         arr = ["clear_received_recipes", username]
         str_clear = "*".join(arr)
@@ -105,10 +109,12 @@ class ReceivedRecipesScreen(tkinter.Toplevel):
         elif data == "Clearing history of received recipes failed":
             messagebox.showerror("Fail", "Try again")
 
+    #פונקציה מחזירה למסך הראשי
     def return_back(self):
         self.parent.deiconify()
         self.destroy()
 
+    #פונקציה מציגה הודעה במסך אם המשתמש רוצה לסגור את חלון אפליקציה וסוגרת את צד הלקוח
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to close the app?"):
             self.parent.parent.parent.end_msg("closed", self.parent.parent.parent.client_socket)
